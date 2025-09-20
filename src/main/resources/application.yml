@@ -1,16 +1,18 @@
 spring:
   datasource:
-    url: jdbc:mysql://shortline.proxy.rlwy.net:42939/railway
+    url: jdbc:mysql://shortline.proxy.rlwy.net:42939/railway?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: WFEAZovufzrUiPHIiTkCulsSANYjqxDv
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update   # 해커톤에서는 보통 update/create
-    show-sql: true
+      ddl-auto: update
     properties:
-      hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect   # ✅ MySQL8Dialect로 변경
+        show_sql: true
+        format_sql: true
 
 openai:
   api:
