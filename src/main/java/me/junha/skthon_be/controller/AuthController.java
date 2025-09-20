@@ -44,4 +44,29 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse<>("로그인 성공", responseDto));
     }
 
+    @PostMapping("/register/admin")
+    public ResponseEntity<ApiResponse<Void>> registerAdmin(@RequestBody UserDto userDto) {
+        userService.register(userDto.getEmail(), userDto.getPassword(), userDto.getName());
+        return ResponseEntity.ok(new ApiResponse<>("회원가입이 완료되었습니다.", null));
+    }
+
+    @PostMapping("/login/admin")
+    public ResponseEntity<ApiResponse<UserResponseDto>> loginAdmin(@RequestBody LoginUserDto loginDto) {
+        User user = userService.login(loginDto.getEmail(), loginDto.getPassword());
+
+        // 필요한 정보만 담아서 응답
+        UserResponseDto responseDto = new UserResponseDto(
+                user.getId(),
+                user.getEmail(),
+                user.getName()
+        );
+
+        return ResponseEntity.ok(new ApiResponse<>("로그인 성공", responseDto));
+    }
+
+    @PostMapping("/register/company")
+    public ResponseEntity<ApiResponse<UserResponseDto>> registerCompany(@RequestBody UserDto userDto) {
+        userService.register(userDto.getEmail(), userDto.getPassword(), userDto.getName());
+        return null;
+    }
 }
