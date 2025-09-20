@@ -48,4 +48,6 @@ public class AssignmentController {
         List<AssignmentResponseDto> assignments = assignmentService.getAssignmentsByAdminId(adminId);
         return ResponseEntity.ok(new ApiResponse<>("조회 성공", assignments));
     }
+
+
 }

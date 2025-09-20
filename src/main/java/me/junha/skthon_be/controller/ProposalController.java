@@ -50,4 +50,14 @@ public class ProposalController {
         List<ProposalResponseDto> proposals = proposalService.getProposalsByAssignId(assignId);
         return ResponseEntity.ok(new ApiResponse<>("조회 성공", proposals));
     }
+
+    @PatchMapping("/proposals/{id}/selected")
+    @Operation(summary = "제안서 채택 여부 수정", description = "제안서의 selected 값을 true/false로 수정합니다.")
+    public ResponseEntity<ApiResponse<ProposalResponseDto>> updateSelected(
+            @PathVariable Long id,
+            @RequestParam boolean selected) {
+
+        ProposalResponseDto updatedProposal = proposalService.updateProposalSelected(id, selected);
+        return ResponseEntity.ok(new ApiResponse<>("제안서 selected 수정 성공", updatedProposal));
+    }
 }

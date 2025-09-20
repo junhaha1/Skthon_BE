@@ -100,4 +100,20 @@ public class ProposalService {
 
         return dtoList;
     }
+    /**
+     * 제안서 selected 값 수정 (채택/거절)
+     */
+    @Transactional
+    public ProposalResponseDto updateProposalSelected(Long proposalId, boolean selected) {
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 제안 ID입니다."));
+
+        // selected 값 업데이트 ("true"/"false" 문자열로 저장)
+        proposal.setSelected(Boolean.toString(selected));
+        proposal.setUpdateAt(LocalDateTime.now());
+
+        Proposal updated = proposalRepository.save(proposal);
+        return toResponseDto(updated);
+    }
+
 }
