@@ -15,5 +15,4 @@ public interface ProposalRepository extends JpaRepository<Proposal, Long> {
     List<Proposal> findByAssignment(Assignment assignment); // 특정 과제에 대한 제안 조회
     List<Proposal> findBySelected(String selected);      // 채택 상태별 조회
     Optional<Proposal> findByUserIdAndAssignment_Id(Long userId, Long assignmentId);
-
 }
