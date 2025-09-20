@@ -33,6 +33,14 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // WebClient 기본 모듈 (Spring WebFlux)
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    // Reactor Netty (타임아웃 등 커스터마이징용, 선택적 명시)
+    implementation("io.projectreactor.netty:reactor-netty")
+
+    //.env 자동로드
+    implementation 'me.paulschwarz:spring-dotenv:2.5.4'
 }
 
 tasks.named('test') {
