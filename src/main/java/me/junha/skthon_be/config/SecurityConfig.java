@@ -20,8 +20,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화 (API 서버라면 주로 꺼둡니다)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().permitAll() // 모든 요청 허용
                 )
+
                 .formLogin(form -> form.disable()) // 기본 로그인 화면 비활성화
                 .httpBasic(basic -> basic.disable()); // Basic Auth 비활성화
 
