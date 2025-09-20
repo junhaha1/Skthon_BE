@@ -89,4 +89,5 @@ public class ProposalService {
     public boolean hasUserSubmittedProposal(Long userId, Long assignId) {
         return proposalRepository.findByUserIdAndAssignment_Id(userId, assignId).isPresent();
     }
+
 }

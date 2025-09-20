@@ -90,5 +90,9 @@ public class AssignmentService {
                 .build();
     }
 
-
+    public List<AssignmentResponseDto> getAssignmentsByAdminId(Long adminId) {
+        return assignmentRepository.findByAdmin_Id(adminId).stream()
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
+    }
 }

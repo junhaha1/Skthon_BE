@@ -41,4 +41,11 @@ public class AssignmentController {
         return ResponseEntity.ok(new ApiResponse<>("조회 성공", assignment));
     }
 
+    @GetMapping("/assignments/admin/{adminId}")
+    @Operation(summary = "관리자 공고 조회", description = "해당 관리자가 올린 모든 과제를 조회합니다.")
+    public ResponseEntity<ApiResponse<List<AssignmentResponseDto>>> getAssignmentsByAdminId(
+            @PathVariable Long adminId) {
+        List<AssignmentResponseDto> assignments = assignmentService.getAssignmentsByAdminId(adminId);
+        return ResponseEntity.ok(new ApiResponse<>("조회 성공", assignments));
+    }
 }
