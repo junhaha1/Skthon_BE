@@ -41,10 +41,11 @@ public class OpenAiService {
      */
     public void streamAnswerToClient(ClientRequest clientRequest, ResponseBodyEmitter emitter) {
         // 하드코딩된 프롬프트
-        String systemPrompt = "당신은 유능한 어시스턴트입니다. 사용자의 질문에 친절하고 구체적으로 답하세요.";
+        String systemPrompt = "당신은 유능한 어시스턴트입니다. 사용자의 질문에 친절하고 구체적으로 답하세요." + clientRequest.getAssignmentContent();
+        String advice = "해당 공모전 내용에 대해서만 답변해줘. 다른 질문을 하면 공모전 내용에 대한 질문만 하도록 해줘.";
 
         List<ChatGPTRequest.Message> messages = new ArrayList<>();
-        messages.add(new ChatGPTRequest.Message("system", systemPrompt));
+        messages.add(new ChatGPTRequest.Message("system", systemPrompt + advice));
 
         if (clientRequest.getPreContent() != null) {
             messages.add(new ChatGPTRequest.Message("assistant", clientRequest.getPreContent()));
