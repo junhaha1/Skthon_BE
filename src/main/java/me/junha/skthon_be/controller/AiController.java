@@ -26,7 +26,7 @@ public class AiController {
     }
 
     @PostMapping(value = "/answer/summaryChat", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String summaryChat(@RequestBody SummaryRequest summaryRequest) {
+    public String summaryChat(@RequestHeader("Authorization") String authHeader, @RequestBody SummaryRequest summaryRequest) {
         return openAiService.summaryChatGPT(summaryRequest);
     }
 
