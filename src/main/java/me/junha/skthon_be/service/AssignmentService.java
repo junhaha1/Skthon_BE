@@ -61,6 +61,16 @@ public class AssignmentService {
     }
 
     /**
+     * 과제 단건 조회
+     */
+    @Transactional(readOnly = true)
+    public AssignmentResponseDto getAssignmentById(Long id) {
+        Assignment assignment = assignmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 과제 ID입니다."));
+        return toResponseDto(assignment);
+    }
+
+    /**
      * 변환 로직 (Entity → DTO)
      */
     private AssignmentResponseDto toResponseDto(Assignment assignment) {
@@ -79,4 +89,6 @@ public class AssignmentService {
                 .adminEmail(assignment.getAdmin().getEmail())
                 .build();
     }
+
+
 }

@@ -8,10 +8,7 @@ import me.junha.skthon_be.dto.assignment.AssignmentRequestDto;
 import me.junha.skthon_be.dto.assignment.AssignmentResponseDto;
 import me.junha.skthon_be.service.AssignmentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,4 +33,12 @@ public class AssignmentController {
         List<AssignmentResponseDto> assignments = assignmentService.getAllAssignments();
         return ResponseEntity.ok(new ApiResponse<>("조회 성공", assignments));
     }
+
+    @GetMapping("/assignments/{id}")
+    @Operation(summary = "과제 단건 조회", description = "선택한 ID에 해당하는 과제를 조회합니다.")
+    public ResponseEntity<ApiResponse<AssignmentResponseDto>> getAssignmentById(@PathVariable Long id) {
+        AssignmentResponseDto assignment = assignmentService.getAssignmentById(id);
+        return ResponseEntity.ok(new ApiResponse<>("조회 성공", assignment));
+    }
+
 }
