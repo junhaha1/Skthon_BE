@@ -84,4 +84,9 @@ public class ProposalService {
                 .assignTitle(proposal.getAssignment() != null ? proposal.getAssignment().getTitle() : null)
                 .build();
     }
+
+
+    public boolean hasUserSubmittedProposal(Long userId, Long assignId) {
+        return proposalRepository.findByUserIdAndAssignId(userId, assignId).isPresent();
+    }
 }

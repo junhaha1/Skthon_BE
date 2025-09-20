@@ -33,4 +33,13 @@ public class ProposalController {
         List<ProposalResponseDto> proposals = proposalService.getAllProposals();
         return ResponseEntity.ok(new ApiResponse<>("조회 성공", proposals));
     }
+
+    @GetMapping("/proposals/check")
+    @Operation(summary = "제안 제출 여부 확인", description = "사용자가 특정 과제에 이미 제안을 제출했는지 여부를 확인합니다.")
+    public ResponseEntity<ApiResponse<Boolean>> checkProposal(
+            @RequestParam Long userId,
+            @RequestParam Long assignId) {
+        boolean submitted = proposalService.hasUserSubmittedProposal(userId, assignId);
+        return ResponseEntity.ok(new ApiResponse<>("확인 성공", submitted));
+    }
 }
