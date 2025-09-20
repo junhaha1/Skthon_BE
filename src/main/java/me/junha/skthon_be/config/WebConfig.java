@@ -8,10 +8,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(final CorsRegistry registry) {
-        registry.addMapping("/**")  // 모든 경로 허용
+        registry.addMapping("/**")
                 .allowedOriginPatterns("*") // 모든 Origin 허용
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowCredentials(false); // 해커톤용: 크리덴셜 필요 없음
     }
 }
