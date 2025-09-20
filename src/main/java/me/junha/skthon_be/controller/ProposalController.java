@@ -42,4 +42,12 @@ public class ProposalController {
         boolean submitted = proposalService.hasUserSubmittedProposal(userId, assignId);
         return ResponseEntity.ok(new ApiResponse<>("확인 성공", submitted));
     }
+
+    @GetMapping("/proposals/assignment/{assignId}")
+    @Operation(summary = "과제별 제안 조회", description = "특정 과제 ID에 대한 모든 제안을 조회합니다.")
+    public ResponseEntity<ApiResponse<List<ProposalResponseDto>>> getProposalsByAssignId(
+            @PathVariable Long assignId) {
+        List<ProposalResponseDto> proposals = proposalService.getProposalsByAssignId(assignId);
+        return ResponseEntity.ok(new ApiResponse<>("조회 성공", proposals));
+    }
 }

@@ -90,4 +90,14 @@ public class ProposalService {
         return proposalRepository.findByUserIdAndAssignment_Id(userId, assignId).isPresent();
     }
 
+    public List<ProposalResponseDto> getProposalsByAssignId(Long assignId) {
+        List<Proposal> proposals = proposalRepository.findByAssignment_Id(assignId);
+
+        List<ProposalResponseDto> dtoList = new java.util.ArrayList<>();
+        for (Proposal proposal : proposals) {
+            dtoList.add(toResponseDto(proposal));
+        }
+
+        return dtoList;
+    }
 }
