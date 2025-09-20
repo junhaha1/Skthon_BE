@@ -1,7 +1,8 @@
 package me.junha.skthon_be.controller;
 
 import lombok.RequiredArgsConstructor;
-import me.junha.skthon_be.dto.ClientRequest;
+import me.junha.skthon_be.dto.openai.ClientRequest;
+import me.junha.skthon_be.dto.openai.SummaryRequest;
 import me.junha.skthon_be.service.OpenAiService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,4 +24,10 @@ public class AiController {
         openAiService.streamAnswerToClient(clientRequest, emitter);
         return emitter;
     }
+
+    @PostMapping(value = "/answer/summaryChat", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String summaryChat(@RequestBody SummaryRequest summaryRequest) {
+        return openAiService.summaryChatGPT(summaryRequest);
+    }
+
 }

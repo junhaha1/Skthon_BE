@@ -75,7 +75,7 @@ public class AuthController {
     @Operation(summary = "회사 등록", description = "회사정보를 등록")
     public ResponseEntity<ApiResponse<CompanyResponseDto>> registerCompany(@RequestBody CompanyRequestDto companyDto) {
         authService.registerCompany(companyDto);
-        return null;
+        return ResponseEntity.ok(new ApiResponse<>("회사가 등록되었습니다.", null));
     }
 
     @GetMapping("/companies")

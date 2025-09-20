@@ -3,9 +3,13 @@ package me.junha.skthon_be.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import me.junha.skthon_be.dto.ChatGPTRequest;
-import me.junha.skthon_be.dto.ClientRequest;
+import me.junha.skthon_be.dto.openai.ChatGPTRequest;
+import me.junha.skthon_be.dto.openai.ClientRequest;
+import me.junha.skthon_be.dto.openai.SummaryRequest;
+import me.junha.skthon_be.entity.Assignment;
+import me.junha.skthon_be.repository.AssignmentRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,6 +21,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +30,7 @@ public class OpenAiService {
     private final WebClient openAiWebClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private final AssignmentRepository assignmentRepository;
     @Value("${openai.model}")
     private String model;
 
@@ -110,4 +117,116 @@ public class OpenAiService {
                 })
                 .subscribe();
     }
+    public String summaryChatGPT(SummaryRequest clientSummaryRequest) {
+        // 1. 하드코딩된 프롬프트 작성
+        String systemPrompt = """
+    당신은 공모전 기획 보조 AI입니다.
+    아래 대화 내용을 읽고, 공모전 주제에 맞게 정리해 주세요.
+    
+    ⚠️ 출력은 반드시 아래 양식에 맞춰주세요. 번호 대신 섹션 제목을 그대로 써야 합니다.
+    
+    [출력 형식]
+    === 핵심 아이디어 ===
+    - (핵심 아이디어를 한두 문장으로)
+    - (필요하다면 추가 아이디어를 bullet로 나열)
+    
+    === 문제의식 및 배경 ===
+    - (해당 문제를 인식하게 된 구체적 배경)
+    - (데이터, 사회적 현상 등 근거를 bullet로)
+    
+    === 기대 효과 ===
+    - (기대되는 긍정적 효과를 bullet로 나열)
+    - (정책, 캠페인, 사회적 파급 효과 등)
+    """;
+
+        // 2. 과제 내용 조회
+        Assignment assignment = assignmentRepository.findById(clientSummaryRequest.getAssignmentId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 과제를 찾을 수 없습니다."));
+
+        // 3. 메시지 초기화
+        List<Map<String, String>> messages = new ArrayList<>();
+        messages.add(Map.of("role", "system", "content", systemPrompt + assignment.getContent()));
+        // 사용자가 입력한 전체 대화 내용도 함께 추가
+        messages.add(Map.of("role", "user", "content", clientSummaryRequest.getTotalContent()));
+
+        // 4. ChatGPT 호출 및 응답 처리
+        StringBuilder fullAnswer = new StringBuilder();
+        boolean isFinished = false;
+
+        while (!isFinished) {
+            Map<String, Object> chatGPTRequest = Map.of(
+                    "model", model,
+                    "messages", messages,
+                    "max_tokens", 1000,
+                    "temperature", 0.7,
+                    "stream", false
+            );
+
+            Map<String, Object> response = openAiWebClient.post()
+                    .uri(apiUrl)
+                    .bodyValue(chatGPTRequest)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .block();
+
+            // 응답 파싱
+            List<Map<String, Object>> choices = (List<Map<String, Object>>) response.get("choices");
+            Map<String, Object> firstChoice = choices.get(0);
+            Map<String, String> message = (Map<String, String>) firstChoice.get("message");
+
+            String answer = message.get("content");
+            String finishReason = (String) firstChoice.get("finish_reason");
+
+            fullAnswer.append(answer);
+
+            if ("length".equals(finishReason)) {
+                messages.add(Map.of("role", "assistant", "content", answer));
+                messages.add(Map.of("role", "system", "content", "이어서 계속 요약"));
+            } else {
+                isFinished = true;
+            }
+        }
+
+        return fullAnswer.toString();
+    }
+
+
+    public String titleChatGPT(String summary) {
+        // 1. 하드코딩된 프롬프트 작성
+        String systemPrompt = """
+        당신은 공모전 주제 요약을 바탕으로 매력적이고 간결한 제목을 만드는 보조 AI입니다.
+        아래 요약을 읽고, 적합한 제목을 1줄로만 생성하세요.
+        """;
+
+        // 2. 요청 본문 구성 (Map 활용)
+        Map<String, Object> chatGPTRequest = Map.of(
+                "model", model,
+                "messages", List.of(
+                        Map.of("role", "system", "content", systemPrompt),
+                        Map.of("role", "user", "content", summary)
+                ),
+                "max_tokens", 100,
+                "temperature", 0.4,
+                "stream", false
+        );
+
+        // 3. API 호출
+        Map<String, Object> response = openAiWebClient.post()
+                .uri(apiUrl)
+                .bodyValue(chatGPTRequest)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .block();
+
+        // 4. 응답 파싱
+        List<Map<String, Object>> choices = (List<Map<String, Object>>) response.get("choices");
+        Map<String, Object> firstChoice = choices.get(0);
+        Map<String, String> message = (Map<String, String>) firstChoice.get("message");
+
+        String title = message.get("content");
+
+        return title;
+    }
+
+
 }

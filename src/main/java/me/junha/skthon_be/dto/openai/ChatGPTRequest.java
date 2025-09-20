@@ -1,4 +1,4 @@
-package me.junha.skthon_be.dto;
+package me.junha.skthon_be.dto.openai;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
